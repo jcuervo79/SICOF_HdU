@@ -573,6 +573,13 @@
     <a href="#" class="back-to-top" id="backToTop">↑</a>
 
     <script>
+        // Funciones de utilidad
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             renderNeedsSection();
@@ -1078,12 +1085,7 @@
                 });
             });
         }
-        // Funciones de utilidad
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
+        // Datos de la aplicación
         const necesidades = [
             { id: "N1", titulo: "Centralización y Gestión de Datos", descripcion: "Consolidar información dispersa en bases de datos únicas, estructuradas y compatibles con el gestor documental Control Doc.", requerimientos: ["RF01", "RF02", "RF03", "RF06", "RF14"] },
             { id: "N2", titulo: "Flujos de Trabajo y Asignación", descripcion: "Definir procesos claros y roles específicos para mejorar la trazabilidad y eficiencia.", requerimientos: ["RF02", "RF07"] },
