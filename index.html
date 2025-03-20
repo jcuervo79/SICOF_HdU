@@ -3,81 +3,965 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matriz de Relaciones SICOF</title>
+    <title>Matriz de Relaciones SICOF LITE</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --tertiary-color: #e74c3c;
+            --background-color: #f9f9f9;
+            --card-background: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --highlight-color: #f1c40f;
+        }
+
+        * {
             margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin: 20px 0 15px 0;
+        }
+
         .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 20px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        .section {
+
+        .tab-container {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 30px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 5px;
             margin-bottom: 20px;
         }
-        .tag {
-            display: inline-block;
-            padding: 5px 10px;
-            margin: 5px;
-            background-color: #3498db;
-            color: white;
-            border-radius: 5px;
+
+        .tab {
+            padding: 10px 20px;
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 5px 5px 0 0;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 0 5px 5px 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+        .search-container {
+            position: relative;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding-left: 35px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 5px;
+        }
+
+        .badge-alta {
+            background-color: var(--tertiary-color);
+            color: white;
+        }
+
+        .badge-media {
+            background-color: var(--highlight-color);
+            color: var(--text-color);
+        }
+
+        .badge-baja {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .relation-line {
+            height: 2px;
+            background-color: var(--secondary-color);
+            margin: 10px 0;
+        }
+
+        .panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .panel-item {
+            flex: 1;
+            min-width: 250px;
+            background-color: var(--card-background);
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .panel-content {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .panel-content ul {
+            list-style-type: none;
+        }
+
+        .panel-content li {
+            padding: 5px 0;
+            border-bottom: 1px dashed var(--border-color);
+            cursor: pointer;
+        }
+
+        .panel-content li:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .panel-content li.selected {
+            background-color: rgba(52, 152, 219, 0.2);
+            font-weight: 600;
+        }
+
+        .detail-panel {
+            background-color: var(--card-background);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .detail-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .detail-section {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .detail-section-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+        }
+
+        .detail-list {
+            list-style-type: none;
+        }
+
+        .detail-list li {
+            padding: 5px 10px;
+            margin-bottom: 5px;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-radius: 3px;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            color: #777;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                border-radius: 5px;
+                margin-bottom: 5px;
+            }
+            
+            .tab-content {
+                border-radius: 5px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+            }
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>Matriz de Relaciones SICOF LITE</h1>
+        <p>Visualización de las relaciones entre necesidades, requerimientos e historias de usuario</p>
+    </header>
+
     <div class="container">
-        <h1>Matriz de Relaciones SICOF</h1>
-        <div class="section" id="needsContainer">
-            <h2>Necesidades</h2>
-            <div id="needsList"></div>
-        </div>
-        <div class="section" id="reqsContainer">
-            <h2>Requerimientos</h2>
-            <div id="reqsList"></div>
-        </div>
-        <div class="section" id="storiesContainer">
-            <h2>Historias de Usuario</h2>
-            <div id="storiesList"></div>
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="tablas">Tablas</div>
+                <div class="tab" data-tab="relaciones">Relaciones</div>
+                <div class="tab" data-tab="prioridades">Prioridades</div>
+            </div>
+
+            <div id="tablas" class="tab-content active">
+                <h2>Tablas de Relaciones</h2>
+
+                <div class="table-container">
+                    <h3>Tabla 1: Relación entre Necesidades y Requerimientos</h3>
+                    <table id="tableNecesidadesRequerimientos">
+                        <thead>
+                            <tr>
+                                <th>Necesidad</th>
+                                <th>Requerimientos Relacionados</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se llenará con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-container">
+                    <h3>Tabla 2: Relación entre Requerimientos e Historias de Usuario</h3>
+                    <table id="tableRequerimientosHistorias">
+                        <thead>
+                            <tr>
+                                <th>Requerimiento</th>
+                                <th>Historias de Usuario Relacionadas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se llenará con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="table-container">
+                    <h3>Tabla 3: Historias de Usuario Organizadas por Prioridad</h3>
+                    <table id="tableHistoriasPrioridad">
+                        <thead>
+                            <tr>
+                                <th>Prioridad</th>
+                                <th>Código</th>
+                                <th>Historia de Usuario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Se llenará con JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="relaciones" class="tab-content">
+                <h2>Visualización de Relaciones</h2>
+
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Buscar por necesidad, requerimiento o historia...">
+                </div>
+
+                <div class="panel">
+                    <div class="panel-item">
+                        <div class="panel-title">Necesidades</div>
+                        <div class="panel-content">
+                            <ul id="necesidadesList">
+                                <!-- Se llenará con JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="panel-item">
+                        <div class="panel-title">Requerimientos</div>
+                        <div class="panel-content">
+                            <ul id="requerimientosList">
+                                <!-- Se llenará con JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="panel-item">
+                        <div class="panel-title">Historias de Usuario</div>
+                        <div class="panel-content">
+                            <ul id="historiasList">
+                                <!-- Se llenará con JavaScript -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-panel" id="detailPanel">
+                    <div class="detail-title">Seleccione un elemento para ver sus relaciones</div>
+                    <div class="detail-content">
+                        <!-- Se llenará con JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="prioridades" class="tab-content">
+                <h2>Visualización por Prioridades</h2>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="priorityFilter">Filtrar por Prioridad</label>
+                        <select id="priorityFilter">
+                            <option value="all">Todas</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="prioridadesContainer">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const necesidades = ["N1", "N2", "N3", "N4"];
-            const requerimientos = ["RF01", "RF02", "RF03"];
-            const historias = ["HU-01", "HU-02", "HU-03"];
+    <footer class="footer">
+        <p>SICOF LITE - Sistema de Información de Control y Fiscalización - © 2025</p>
+    </footer>
 
-            function renderList(containerId, items) {
-                let container = document.getElementById(containerId);
-                if (!container) return;
-                container.innerHTML = "";
-                items.forEach(item => {
-                    let span = document.createElement('span');
-                    span.classList.add('tag');
-                    span.textContent = item;
-                    span.dataset.id = item;
-                    container.appendChild(span);
+    <script>
+        // Datos de la matriz de relaciones
+        const necesidadesRequerimientos = [
+            { necesidad: "N1: Centralización y Gestión de Datos", requerimientos: ["RF01", "RF02", "RF03", "RF06", "RF14"] },
+            { necesidad: "N2: Flujos de Trabajo y Asignación", requerimientos: ["RF02", "RF07"] },
+            { necesidad: "N3: Trazabilidad de Trámites", requerimientos: ["RF04", "RF11", "RF12"] },
+            { necesidad: "N4: Control de Acceso y Seguridad", requerimientos: ["RF01", "RF07"] },
+            { necesidad: "N5: Consultas y Reportes", requerimientos: ["RF05", "RF10", "RF13"] },
+            { necesidad: "N6: Reglas de Negocio y Validaciones", requerimientos: ["RF08"] },
+            { necesidad: "N7: Interoperabilidad", requerimientos: ["RF06", "RF16"] },
+            { necesidad: "N8: Usabilidad y Experiencia", requerimientos: ["RF16", "RNF01"] },
+            { necesidad: "N9: Gestión de Modalidades y Establecimientos", requerimientos: ["RF03", "RF11"] },
+            { necesidad: "N10: Gestión de Vigencias y Notificaciones", requerimientos: ["RF08", "RF09"] }
+        ];
+
+        const requerimientosHistorias = [
+            { requerimiento: "RF01: Gestión de Usuarios y Seguridad", historias: ["HU-01", "HU-22"] },
+            { requerimiento: "RF02: Registro y Seguimiento de Trámites", historias: ["HU-02", "HU-14"] },
+            { requerimiento: "RF03: Gestión de Inscripciones", historias: ["HU-03", "HU-12", "HU-20"] },
+            { requerimiento: "RF04: Gestión de Novedades", historias: ["HU-04"] },
+            { requerimiento: "RF05: Consultas y Reportes", historias: ["HU-05", "HU-16"] },
+            { requerimiento: "RF06: Integración con Control Doc", historias: ["HU-06", "HU-17"] },
+            { requerimiento: "RF07: Parametrización y Administración del Sistema", historias: ["HU-11", "HU-24"] },
+            { requerimiento: "RF08: Validaciones y Reglas de Negocio", historias: ["HU-07", "HU-13"] },
+            { requerimiento: "RF09: Notificaciones y Alertas", historias: ["HU-08", "HU-21"] },
+            { requerimiento: "RF10: Dashboard y Visualización", historias: ["HU-10"] },
+            { requerimiento: "RF11: Gestión de Novedades Específicas", historias: ["HU-04"] },
+            { requerimiento: "RF12: Gestión de Relaciones entre Trámites", historias: ["HU-09"] },
+            { requerimiento: "RF13: Dashboard y Visualización de Datos", historias: ["HU-10", "HU-18"] },
+            { requerimiento: "RF14: Gestión del Ciclo de Vida del Dato", historias: ["HU-15", "HU-19"] },
+            { requerimiento: "RF15: Escalabilidad y Mantenimiento", historias: [] },
+            { requerimiento: "RF16: Integración y Adaptabilidad", historias: ["HU-23"] },
+            { requerimiento: "RNF01: Usabilidad y Experiencia", historias: ["HU-23"] }
+        ];
+
+        const historiasPrioridad = [
+            { prioridad: "Alta", codigo: "HU-01", nombre: "Autenticación de Usuarios" },
+            { prioridad: "Alta", codigo: "HU-02", nombre: "Registro de Trámites" },
+            { prioridad: "Alta", codigo: "HU-03", nombre: "Gestión de Inscripciones" },
+            { prioridad: "Alta", codigo: "HU-06", nombre: "Integración con Control Doc" },
+            { prioridad: "Alta", codigo: "HU-08", nombre: "Gestión de Notificaciones" },
+            { prioridad: "Media", codigo: "HU-04", nombre: "Gestión de Novedades" },
+            { prioridad: "Media", codigo: "HU-05", nombre: "Consultas y Reportes" },
+            { prioridad: "Media", codigo: "HU-07", nombre: "Validaciones Automáticas" },
+            { prioridad: "Media", codigo: "HU-09", nombre: "Gestión de Relaciones entre Trámites" },
+            { prioridad: "Media", codigo: "HU-13", nombre: "Cálculo Automático de Fechas" },
+            { prioridad: "Media", codigo: "HU-14", nombre: "Asignación de Trámites" },
+            { prioridad: "Media", codigo: "HU-16", nombre: "Exportación de Datos" },
+            { prioridad: "Media", codigo: "HU-17", nombre: "Gestión de Documentos Adjuntos" },
+            { prioridad: "Baja", codigo: "HU-10", nombre: "Visualización Dashboard" },
+            { prioridad: "Baja", codigo: "HU-11", nombre: "Parametrización del Sistema" },
+            { prioridad: "Baja", codigo: "HU-12", nombre: "Gestión de Modalidades" },
+            { prioridad: "Baja", codigo: "HU-15", nombre: "Seguimiento de Auditoría" },
+            { prioridad: "Baja", codigo: "HU-18", nombre: "Semáforo de Estados" },
+            { prioridad: "Baja", codigo: "HU-19", nombre: "Historial de Cambios" },
+            { prioridad: "Baja", codigo: "HU-20", nombre: "Gestión de Modalidades Múltiples" },
+            { prioridad: "Baja", codigo: "HU-21", nombre: "Control de Vencimientos" },
+            { prioridad: "Baja", codigo: "HU-22", nombre: "Diferenciación por Roles" },
+            { prioridad: "Baja", codigo: "HU-23", nombre: "Adaptabilidad Visual" },
+            { prioridad: "Baja", codigo: "HU-24", nombre: "Flujos de Aprobación Configurables" }
+        ];
+
+        // Funciones para llenar las tablas
+        function llenarTablaNecesidadesRequerimientos() {
+            const tbody = document.getElementById('tableNecesidadesRequerimientos').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+            
+            necesidadesRequerimientos.forEach(item => {
+                const row = tbody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                
+                cell1.textContent = item.necesidad;
+                cell2.textContent = item.requerimientos.join(', ');
+            });
+        }
+
+        function llenarTablaRequerimientosHistorias() {
+            const tbody = document.getElementById('tableRequerimientosHistorias').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+            
+            requerimientosHistorias.forEach(item => {
+                const row = tbody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                
+                cell1.textContent = item.requerimiento;
+                cell2.textContent = item.historias.join(', ');
+            });
+        }
+
+        function llenarTablaHistoriasPrioridad() {
+            const tbody = document.getElementById('tableHistoriasPrioridad').getElementsByTagName('tbody')[0];
+            tbody.innerHTML = '';
+            
+            historiasPrioridad.forEach(item => {
+                const row = tbody.insertRow();
+                const cell1 = row.insertCell(0);
+                const cell2 = row.insertCell(1);
+                const cell3 = row.insertCell(2);
+                
+                cell1.textContent = item.prioridad;
+                cell2.textContent = item.codigo;
+                cell3.textContent = item.nombre;
+                
+                // Añadir clase para el estilo según prioridad
+                cell1.innerHTML = `<span class="badge badge-${item.prioridad.toLowerCase()}">${item.prioridad}</span>`;
+            });
+        }
+
+        // Funciones para llenar las listas de relaciones
+        function llenarListasRelaciones() {
+            const necesidadesList = document.getElementById('necesidadesList');
+            const requerimientosList = document.getElementById('requerimientosList');
+            const historiasList = document.getElementById('historiasList');
+            
+            necesidadesList.innerHTML = '';
+            requerimientosList.innerHTML = '';
+            historiasList.innerHTML = '';
+            
+            necesidadesRequerimientos.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item.necesidad;
+                li.dataset.tipo = 'necesidad';
+                li.dataset.id = item.necesidad;
+                li.addEventListener('click', mostrarRelaciones);
+                necesidadesList.appendChild(li);
+            });
+            
+            requerimientosHistorias.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item.requerimiento;
+                li.dataset.tipo = 'requerimiento';
+                li.dataset.id = item.requerimiento;
+                li.addEventListener('click', mostrarRelaciones);
+                requerimientosList.appendChild(li);
+            });
+            
+            historiasPrioridad.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.codigo}: ${item.nombre}`;
+                li.dataset.tipo = 'historia';
+                li.dataset.id = item.codigo;
+                li.addEventListener('click', mostrarRelaciones);
+                historiasList.appendChild(li);
+            });
+        }
+
+        // Función para mostrar relaciones
+        function mostrarRelaciones(event) {
+            // Eliminar selección anterior
+            document.querySelectorAll('.panel-content li').forEach(li => {
+                li.classList.remove('selected');
+            });
+            
+            // Añadir clase 'selected' al elemento clickeado
+            this.classList.add('selected');
+            
+            const tipo = this.dataset.tipo;
+            const id = this.dataset.id;
+            const detailPanel = document.getElementById('detailPanel');
+            const detailContent = detailPanel.querySelector('.detail-content');
+            
+            // Limpiar contenido anterior
+            detailPanel.querySelector('.detail-title').textContent = this.textContent;
+            detailContent.innerHTML = '';
+            
+            if (tipo === 'necesidad') {
+                // Buscar requerimientos relacionados
+                const item = necesidadesRequerimientos.find(n => n.necesidad === id);
+                const requerimientos = item ? item.requerimientos : [];
+                
+                // Sección de requerimientos relacionados
+                const reqSection = document.createElement('div');
+                reqSection.className = 'detail-section';
+                reqSection.innerHTML = `<div class="detail-section-title">Requerimientos Relacionados</div>`;
+                
+                const reqList = document.createElement('ul');
+                reqList.className = 'detail-list';
+                
+                if (requerimientos.length > 0) {
+                    requerimientos.forEach(req => {
+                        const reqItem = requerimientosHistorias.find(r => r.requerimiento.startsWith(req));
+                        if (reqItem) {
+                            const li = document.createElement('li');
+                            li.textContent = reqItem.requerimiento;
+                            li.addEventListener('click', () => {
+                                document.querySelector(`#requerimientosList li[data-id="${reqItem.requerimiento}"]`).click();
+                            });
+                            reqList.appendChild(li);
+                        }
+                    });
+                } else {
+                    reqList.innerHTML = '<li>No hay requerimientos relacionados</li>';
+                }
+                
+                reqSection.appendChild(reqList);
+                detailContent.appendChild(reqSection);
+                
+            } else if (tipo === 'requerimiento') {
+                // Buscar necesidades relacionadas
+                const necesidades = [];
+                necesidadesRequerimientos.forEach(item => {
+                    const reqCode = id.split(':')[0].trim();
+                    if (item.requerimientos.includes(reqCode)) {
+                        necesidades.push(item.necesidad);
+                    }
+                });
+                
+                // Buscar historias relacionadas
+                const reqItem = requerimientosHistorias.find(r => r.requerimiento === id);
+                const historias = reqItem ? reqItem.historias : [];
+                
+                // Sección de necesidades relacionadas
+                const necSection = document.createElement('div');
+                necSection.className = 'detail-section';
+                necSection.innerHTML = `<div class="detail-section-title">Necesidades Relacionadas</div>`;
+                
+                const necList = document.createElement('ul');
+                necList.className = 'detail-list';
+                
+                if (necesidades.length > 0) {
+                    necesidades.forEach(nec => {
+                        const li = document.createElement('li');
+                        li.textContent = nec;
+                        li.addEventListener('click', () => {
+                            document.querySelector(`#necesidadesList li[data-id="${nec}"]`).click();
+                        });
+                        necList.appendChild(li);
+                    });
+                } else {
+                    necList.innerHTML = '<li>No hay necesidades relacionadas</li>';
+                }
+                
+                necSection.appendChild(necList);
+                detailContent.appendChild(necSection);
+                
+                // Sección de historias relacionadas
+                const histSection = document.createElement('div');
+                histSection.className = 'detail-section';
+                histSection.innerHTML = `<div class="detail-section-title">Historias de Usuario Relacionadas</div>`;
+                
+                const histList = document.createElement('ul');
+                histList.className = 'detail-list';
+                
+                if (historias.length > 0) {
+                    historias.forEach(hist => {
+                        const histItem = historiasPrioridad.find(h => h.codigo === hist);
+                        if (histItem) {
+                            const li = document.createElement('li');
+                            li.textContent = `${histItem.codigo}: ${histItem.nombre} (${histItem.prioridad})`;
+                            li.addEventListener('click', () => {
+                                document.querySelector(`#historiasList li[data-id="${histItem.codigo}"]`).click();
+                            });
+                            histList.appendChild(li);
+                        }
+                    });
+                } else {
+                    histList.innerHTML = '<li>No hay historias de usuario relacionadas</li>';
+                }
+                
+                histSection.appendChild(histList);
+                detailContent.appendChild(histSection);
+                
+            } else if (tipo === 'historia') {
+                // Buscar requerimientos relacionados
+                const requerimientos = [];
+                requerimientosHistorias.forEach(item => {
+                    if (item.historias.includes(id)) {
+                        requerimientos.push(item.requerimiento);
+                    }
+                });
+                
+                // Buscar información de la historia
+                const histItem = historiasPrioridad.find(h => h.codigo === id);
+                
+                // Sección de información de la historia
+                const infoSection = document.createElement('div');
+                infoSection.className = 'detail-section';
+                infoSection.innerHTML = `
+                    <div class="detail-section-title">Información de la Historia</div>
+                    <ul class="detail-list">
+                        <li><strong>Código:</strong> ${histItem.codigo}</li>
+                        <li><strong>Nombre:</strong> ${histItem.nombre}</li>
+                        <li><strong>Prioridad:</strong> <span class="badge badge-${histItem.prioridad.toLowerCase()}">${histItem.prioridad}</span></li>
+                    </ul>
+                `;
+                
+                infoSection.appendChild(document.createElement('div'));
+                detailContent.appendChild(infoSection);
+                
+                // Sección de requerimientos relacionados
+                const reqSection = document.createElement('div');
+                reqSection.className = 'detail-section';
+                reqSection.innerHTML = `<div class="detail-section-title">Requerimientos Relacionados</div>`;
+                
+                const reqList = document.createElement('ul');
+                reqList.className = 'detail-list';
+                
+                if (requerimientos.length > 0) {
+                    requerimientos.forEach(req => {
+                        const li = document.createElement('li');
+                        li.textContent = req;
+                        li.addEventListener('click', () => {
+                            document.querySelector(`#requerimientosList li[data-id="${req}"]`).click();
+                        });
+                        reqList.appendChild(li);
+                    });
+                } else {
+                    reqList.innerHTML = '<li>No hay requerimientos relacionados</li>';
+                }
+                
+                reqSection.appendChild(reqList);
+                detailContent.appendChild(reqSection);
+            }
+        }
+
+        // Función para llenar la vista de prioridades
+        function llenarVistaPrioridades() {
+            const container = document.getElementById('prioridadesContainer');
+            container.innerHTML = '';
+            
+            const priorities = ['Alta', 'Media', 'Baja'];
+            
+            priorities.forEach(priority => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                card.innerHTML = `
+                    <div class="card-title">
+                        Prioridad: <span class="badge badge-${priority.toLowerCase()}">${priority}</span>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Historia de Usuario</th>
+                                    <th>Requerimientos</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-${priority.toLowerCase()}">
+                                <!-- Se llenará con JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+                
+                container.appendChild(card);
+                
+                const tbody = document.getElementById(`tbody-${priority.toLowerCase()}`);
+                
+                historiasPrioridad.filter(item => item.prioridad === priority).forEach(item => {
+                    const row = tbody.insertRow();
+                    const cell1 = row.insertCell(0);
+                    const cell2 = row.insertCell(1);
+                    const cell3 = row.insertCell(2);
+                    
+                    cell1.textContent = item.codigo;
+                    cell2.textContent = item.nombre;
+                    
+                    // Buscar requerimientos relacionados
+                    const requerimientos = [];
+                    requerimientosHistorias.forEach(req => {
+                        if (req.historias.includes(item.codigo)) {
+                            requerimientos.push(req.requerimiento.split(':')[0]);
+                        }
+                    });
+                    
+                    cell3.textContent = requerimientos.join(', ');
+                });
+            });
+        }
+
+        // Función para filtrar por prioridad
+        function filtrarPorPrioridad() {
+            const selectedPriority = document.getElementById('priorityFilter').value;
+            const cards = document.querySelectorAll('#prioridadesContainer .card');
+            
+            if (selectedPriority === 'all') {
+                cards.forEach(card => {
+                    card.style.display = 'block';
+                });
+            } else {
+                cards.forEach(card => {
+                    const cardPriority = card.querySelector('.card-title .badge').textContent;
+                    if (cardPriority === selectedPriority) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
             }
+        }
 
-            renderList('needsList', necesidades);
-            renderList('reqsList', requerimientos);
-            renderList('storiesList', historias);
-
-            document.addEventListener('click', function(event) {
-                if (event.target.classList.contains('tag')) {
-                    alert(`Has seleccionado: ${event.target.dataset.id}`);
+        // Función para buscar en las relaciones
+        function buscarEnRelaciones() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            if (searchTerm.trim() === '') {
+                // Mostrar todos los elementos si no hay término de búsqueda
+                document.querySelectorAll('.panel-content li').forEach(li => {
+                    li.style.display = 'block';
+                });
+                return;
+            }
+            
+            // Buscar en necesidades
+            document.querySelectorAll('#necesidadesList li').forEach(li => {
+                if (li.textContent.toLowerCase().includes(searchTerm)) {
+                    li.style.display = 'block';
+                } else {
+                    li.style.display = 'none';
                 }
             });
-        });
+            
+            // Buscar en requerimientos
+            document.querySelectorAll('#requerimientosList li').forEach(li => {
+                if (li.textContent.toLowerCase().includes(searchTerm)) {
+                    li.style.display = 'block';
+                } else {
+                    li.style.display = 'none';
+                }
+            });
+            
+            // Buscar en historias
+            document.querySelectorAll('#historiasList li').forEach(li => {
+                if (li.textContent.toLowerCase().includes(searchTerm)) {
+                    li.style.display = 'block';
+                } else {
+                    li.style.display = 'none';
+                }
+            });
+        }
+
+        // Función para cambiar de pestaña
+        function cambiarTab(event) {
+            const tabId = event.target.getAttribute('data-tab');
+            
+            // Quitar clase active de todas las pestañas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Quitar clase active de todos los contenidos
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Añadir clase active a la pestaña y contenido seleccionados
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Inicializar la aplicación
+        function inicializar() {
+            // Llenar tablas
+            llenarTablaNecesidadesRequerimientos();
+            llenarTablaRequerimientosHistorias();
+            llenarTablaHistoriasPrioridad();
+            
+            // Llenar listas de relaciones
+            llenarListasRelaciones();
+            
+            // Llenar vista de prioridades
+            llenarVistaPrioridades();
+            
+            // Añadir evento para cambiar de pestaña
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', cambiarTab);
+            });
+            
+            // Añadir evento para filtrar por prioridad
+            document.getElementById('priorityFilter').addEventListener('change', filtrarPorPrioridad);
+            
+            // Añadir evento para buscar en relaciones
+            document.getElementById('searchInput').addEventListener('input', buscarEnRelaciones);
+        }
+
+        // Ejecutar cuando el DOM esté cargado
+        document.addEventListener('DOMContentLoaded', inicializar);
     </script>
 </body>
 </html>
